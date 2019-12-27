@@ -13,6 +13,18 @@
 #define statusBarHeight CGRectGetHeight([UIApplication sharedApplication].statusBarFrame)
 #define navigationBarHeight CGRectGetHeight(self.navigationController.navigationBar.frame)
 
+static inline NSString *XHScanQRCodeBundlePathForResource(NSString *bundleName, Class aClass, NSString *resourceName, NSString *ofType, BOOL times) {
+    NSBundle *bundle = [NSBundle bundleForClass:aClass];
+    NSURL *url = [bundle URLForResource:bundleName withExtension:@"bundle"];
+    bundle = [NSBundle bundleWithURL:url];
+    NSString *name = resourceName;
+    if (times) {
+        name = [UIScreen mainScreen].scale==3?[name stringByAppendingString:@"@3x"]:[name stringByAppendingString:@"@2x"];
+    }
+    NSString *imagePath = [bundle pathForResource:name ofType:ofType];
+    return imagePath;
+}
+
 //static const CGFloat kBorderW = 100;
 static const CGFloat kMargin = 50;
 
@@ -60,8 +72,9 @@ static const CGFloat kMargin = 50;
     [self.view addSubview:navView];
     
     // 返回按钮
+    NSString *path = XHScanQRCodeBundlePathForResource(@"xh.scan", [XHScanQRCodeViewController class], @"qrcode_scan_titlebar_back_nor", @"png", 1);
     UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [backBtn setImage:[UIImage imageNamed:@"xh.scan.bundle/qrcode_scan_titlebar_back_nor"] forState:UIControlStateNormal];
+    [backBtn setImage:[UIImage imageWithContentsOfFile:path] forState:UIControlStateNormal];
     backBtn.contentMode = UIViewContentModeScaleAspectFit;
     [backBtn addTarget:self action:@selector(disMiss) forControlEvents:UIControlEventTouchUpInside];
     [navView addSubview:backBtn];
@@ -179,11 +192,14 @@ static const CGFloat kMargin = 50;
 - (void)setupBottomBar {
     
     //闪光灯
+    NSString *pathFlash = XHScanQRCodeBundlePathForResource(@"xh.scan", [XHScanQRCodeViewController class], @"qrcode_scan_btn_flash_nor", @"png", 1);
+    
+    NSString *pathOff = XHScanQRCodeBundlePathForResource(@"xh.scan", [XHScanQRCodeViewController class], @"qrcode_scan_btn_scan_off", @"png", 1);
     
     UIButton *flashBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     flashBtn.contentMode = UIViewContentModeScaleAspectFit;
-    [flashBtn setImage:[UIImage imageNamed:@"xh.scan.bundle/qrcode_scan_btn_flash_nor"] forState:UIControlStateNormal];
-    [flashBtn setImage:[UIImage imageNamed:@"xh.scan.bundle/qrcode_scan_btn_scan_off"] forState:UIControlStateSelected];
+    [flashBtn setImage:[UIImage imageWithContentsOfFile:pathFlash] forState:UIControlStateNormal];
+    [flashBtn setImage:[UIImage imageWithContentsOfFile:pathOff] forState:UIControlStateSelected];
     [flashBtn addTarget:self action:@selector(openFlashAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:flashBtn];
     
