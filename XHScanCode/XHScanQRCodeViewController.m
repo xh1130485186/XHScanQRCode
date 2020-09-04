@@ -315,8 +315,22 @@ static const CGFloat kMargin = 50;
                 [results addObject:result];
             }
         }
+        
+        [self playSound];
+        
         [self scanResultWithArray:results];
     }
+}
+
+- (void)playSound {
+    SystemSoundID soundID = 8787;
+    
+    NSString *pathFlash = XHScanQRCodeBundlePathForResource(@"xh.scan", [XHScanQRCodeViewController class], @"scanSuccess", @"wav", 1);
+    
+    NSURL *url = [[NSBundle mainBundle] URLForResource:pathFlash withExtension:nil];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)url, &soundID);
+    AudioServicesPlayAlertSound(soundID);
+    AudioServicesPlaySystemSound(soundID);
 }
 
 - (void)scanResultWithArray:(NSArray<XHScanResult *> *)results {
